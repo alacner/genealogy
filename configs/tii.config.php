@@ -3,24 +3,24 @@
  * Tii Configure
  *
  * @author Alacner Zhang <alacner@gmail.com>
- * @version $Id: tii.config.php 8644 2016-11-21 03:07:17Z alacner $
+ * @version $Id: tii.config.php 8374 2016-11-01 01:45:56Z alacner $
  */
 
 return [
 	'debug_mode' => true, //debug mode
 	'timezone' => 'UTC',//Asia/Chongqing Asia/Shanghai Asia/Urumqi Asia/Hong_Kong Etc/GMT-8 Singapore Hongkong PRC
 	'logger' => [
-		'handler' => ['Tii_Logger_File', '/path/to/save/logger/file'],//The default configuration using `tii.temp_dir'
+		'handler' => ['Tii_Logger_File'],//The default configuration using `tii.temp_dir'
 		'priority' => Tii_Logger_Constant::ALL,
 	],
 	'temp_dir' => sys_get_temp_dir(), //Note: the cli and HTTP mode maybe inconsistent.
 	'data_dir' => '/tii/data',//path to save permanent data
-	'library' => [
-		//'include' => [],
-		//'Tattoo' => '/path/to/tattoo/class',
-		//'SomeOther' => '/path/to/some/other/class',
-		//'*' => '/root/path/to/some/other/class',
-	],
+	'library' => array(
+		'include' => array(
+			realpath(dirname(__DIR__) . '/library/classes'),
+		),
+		'*' => realpath(dirname(__DIR__) . '/library'),
+	),
 
 	'auth_code_key' => Tii_Config::getIdentifier(),//for Tii_Security_Encryption
 
@@ -30,7 +30,7 @@ return [
 			'start' => false, //session start?
 			'handler' => NULL,//change handler?
 		],
-		'directory' => '/path/to/application',//all in one, ${module}/[controllers|views|hooks|library]/*
+		'directory' => dirname(__DIR__) . '/application',//all in one, ${module}/[controllers|views|hooks|library]/*
 		//'directory' => [//${module}/*
 		//	'controllers' => '/path/to/controllers',
 		//	'views' => '/path/to/views',
@@ -111,12 +111,6 @@ eot
 			]
 		],
 		'rewrite' => [//rewrite input to other
-			'pseudo' => [//pseudo rewrite ...
-				'http' => [//path  => render
-					//"/path/to/page.html" => "/path/to/page-{foo}.html",///path/to/page.html?foo=bar => /path/to/page-bar.html
-				],
-				'cli' => [],
-			],
 			'http' => [//preg_replace, [pattern => replacement,...]
 				//'*' => function($uri){return $uri;},//callable
 				//'|^/$|' => '/path',
@@ -124,14 +118,9 @@ eot
 			],
 			'cli' => [],
 		],
-		'filters' => [
-			//'*' => '/path/to/filters',
-			//'tii.application.processor' => function($processor) {return $processor;},
-			/** The following part @see Tii_Event::action */
-			//'tii.error.handler' => function($errno , $errstr, $errfile, $errline, $errcontext /** @see set_error_handler */) {},
-			//'tii.exception.handler' => function($exception){},
-			//'tii.shutdown.handler' => function() {},
-		],
+		'filters' => array(
+			'*' => realpath(dirname(__DIR__) . '/hooks'),
+		),
 		'helper' => [
 			'html' => [
 				'base_url' => '',//base url for css or script
